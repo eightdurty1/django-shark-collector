@@ -11,9 +11,15 @@
     {% if shark.age > 0 %}
       <p>Age: {{ shark.age }}</p>
     {% else %}
-      <p>Age: Shark</p>
+      <p>Age: Baby Shark</p>
     {% endif %}
   </div>
+   <!-- Add the following markup -->
+   <div class="card-action">
+    <a href="{% url 'sharks_update' shark.id %}">Edit</a>
+    <a href="{% url 'sharks_delete' shark.id %}">Delete</a>
+  </div>
+  <!-- New markup above -->
 </div>
 
 {% endblock %}

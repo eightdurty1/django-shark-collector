@@ -1,4 +1,6 @@
 from django.db import models
+# Import the reverse function
+from django.urls import reverse
 
 # Create your models here.
 
@@ -14,4 +16,6 @@ def __str__(self):
     return self.name
 
 
-
+# Add this method
+def get_absolute_url(self):
+    return reverse('detail', kwargs={'cat_id': self.id})
