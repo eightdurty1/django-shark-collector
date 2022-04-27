@@ -1,7 +1,8 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Shark
+from .forms import FeedingForm
 
 # Create your views here.
 # defining the home view
@@ -47,5 +48,23 @@ def sharks_index(request):
     return render(request, 'sharks/index.html', {'sharks': sharks})
     
 def sharks_detail(request, shark_id):
-  shark = Shark.objects.get(id=cat_id)
-  return render(request, 'sharks/detail.html', { 'shark': shark})
+  shark = Shark.objects.get(id=shark_id)
+  # instantiate FeedingForm to be rendered in the template
+  feeding_form = FeedingForm()
+  return render(request, 'sharks/detail.html', {
+    # include the cat and feeding_form in the context
+    'shark': shark, 'feeding_form': feeding_form
+  })
+
+# add this new function below cats_detail
+def add_feeding(request, shark_id):
+  # create a ModelForm instance using the data in request.POST
+    form = FeedingForm(request.POST)
+    # validate the form
+    if form.is_valid():
+        # don't save the form to the db until it
+        # has the cat_id assigned
+        new_feeding = form.save(commit=False)
+        new_feeding.shark_id = shark_id
+        new_feeding.save()
+    return redirect('detail', shark_id=shark_id)
