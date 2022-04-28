@@ -4,10 +4,23 @@ from django.urls import reverse
 
 # Create your models here.
 
+class Toy(models.Model):
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+    def get_absolute_url(self):
+        return reverse('toys_detail', kwargs={'pk': self.id})
+
+
+
+
+
 MEALS = (
     ('B', 'Breakfast'),
     ('L', 'Lunch'),
-    ('D', 'Dinner')
+    ('D', 'Dinner'),
 )
 
 
@@ -16,6 +29,7 @@ class Shark(models.Model):
     breed = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     age = models.IntegerField()
+    toys = models.ManyToManyField(Toy)
 
 
 #adding the __str__ method new code below
@@ -24,22 +38,22 @@ class Shark(models.Model):
 
 
 # Add this method
-def get_absolute_url(self):
-    return reverse('detail', kwargs={'cat_id': self.id})
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={'shark_id': self.id})
 
 
 # Add new Feeding model below Cat model
 class Feeding(models.Model):
   date = models.DateField('feeding date')
   meal = models.CharField(
-      max_length=1,
-      # add the 'choices' field option
-      choices=MEALS,
-      # set the default value for meal to be 'B'
-      default=MEALS[0][0]
+    max_length=1,
+    # add the 'choices' field option
+    choices=MEALS,
+    # set the default value for meal to be 'B'
+    default=MEALS[0][0]
 
-      )
-# Create a cat_id FK
+    )
+    # Create a cat_id FK
 shark = models.ForeignKey(Shark, on_delete=models.CASCADE)      
 
 def __str__(self):
@@ -47,4 +61,4 @@ def __str__(self):
     return f"{self.get_meal_display()} on {self.date}"
 
 class Meta:
-    ordering = ['-date']
+    ordering = ['-date']  

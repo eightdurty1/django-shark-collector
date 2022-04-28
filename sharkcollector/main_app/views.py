@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Shark
+from .models import Shark, Toy
 from .forms import FeedingForm
 
 # Create your views here.
@@ -49,11 +49,15 @@ def sharks_index(request):
     
 def sharks_detail(request, shark_id):
   shark = Shark.objects.get(id=shark_id)
+  # Get the toys the shark doesn't have
+  toys_shark_doesnt_have = Toy.objects.exclude(id__in = shark.toys.all().values_list('id'))
   # instantiate FeedingForm to be rendered in the template
   feeding_form = FeedingForm()
   return render(request, 'sharks/detail.html', {
     # include the cat and feeding_form in the context
-    'shark': shark, 'feeding_form': feeding_form
+    'shark': shark, 'feeding_form': feeding_form,
+    # Add the toys to be displayed
+    'toys': toys_shark_doesnt_have
   })
 
 # add this new function below cats_detail
@@ -68,3 +72,25 @@ def add_feeding(request, shark_id):
         new_feeding.shark_id = shark_id
         new_feeding.save()
     return redirect('detail', shark_id=shark_id)
+
+def assoc_toy(request, shark_id, toy_id):
+  Shark.objects.get(id=shark_id).toys.add(toy_id)
+  return redirect('detail', shark_id=shark_id)
+
+class ToyList(ListView):
+  model = Toy
+
+class ToyDetail(DetailView):
+  model = Toy
+
+class ToyCreate(CreateView):
+  model = Toy
+  fields = '__all__'
+
+class ToyUpdate(UpdateView):
+  model = Toy
+  fields = ['name', 'color']
+
+class ToyDelete(DeleteView):
+  model = Toy
+  success_url = '/toys/'
